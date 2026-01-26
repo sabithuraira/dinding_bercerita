@@ -3,8 +3,13 @@
 .env
 .env.backup
 .env.production
+.env.docker
+docker-compose.override.yml
+docker-compose.yml
+Dockerfile
 .phpactor.json
 .phpunit.result.cache
+/docker
 /.fleet
 /.idea
 /.nova
