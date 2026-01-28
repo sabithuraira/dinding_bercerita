@@ -55,17 +55,6 @@ class SpadaQuestionController extends Controller
     }
 
     /**
-     * Load data for AJAX requests (alias for index)
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function loadData(Request $request)
-    {
-        return $this->index($request);
-    }
-
-    /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
