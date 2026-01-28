@@ -15,6 +15,7 @@ class CurhatAnonController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 10);
+        $page = $request->get('page') ?? $request->get('p') ?? $request->get('page_num') ?? 1;
         $filterStatus = $request->get('filter_status_verifikasi');
         
         $query = CurhatAnon::orderBy('created_at', 'desc');
@@ -24,7 +25,7 @@ class CurhatAnonController extends Controller
             $query->where('status_verifikasi', $filterStatus);
         }
         
-        $datas = $query->paginate($perPage);
+        $datas = $query->paginate($perPage, ['*'], 'page', $page);
 
         return response()->json([
             'success' => '1', 

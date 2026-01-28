@@ -18,6 +18,7 @@ class SpadaAnswerController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 10);
+        $page = $request->get('page') ?? $request->get('p') ?? $request->get('page_num') ?? 1;
         $filterQuestionId = $request->get('filter_question_id');
         $withQuestion = $request->get('with_question', false);
         
@@ -33,7 +34,7 @@ class SpadaAnswerController extends Controller
             $query->with('question');
         }
         
-        $datas = $query->paginate($perPage);
+        $datas = $query->paginate($perPage, ['*'], 'page', $page);
 
         return response()->json([
             'success' => '1', 
