@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('musi_user', function (Blueprint $table) {
+        Schema::create('musi_users', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
@@ -43,23 +43,8 @@ return new class extends Migration
             $table->string('pimpinan_jabatan')->nullable();
             $table->tinyInteger('is_active')->default(1);
 
-            $table->index('kdprop', 'prop_index');
-            $table->index('kdkab', 'kab_index');
-        });
-
-        Schema::create('password_reset_tokens', function (Blueprint $table) {
-            $table->string('email')->primary();
-            $table->string('token');
-            $table->timestamp('created_at')->nullable();
-        });
-
-        Schema::create('sessions', function (Blueprint $table) {
-            $table->string('id')->primary();
-            $table->foreignId('user_id')->nullable()->index();
-            $table->string('ip_address', 45)->nullable();
-            $table->text('user_agent')->nullable();
-            $table->longText('payload');
-            $table->integer('last_activity')->index();
+            $table->index('kdprop', 'musi_users_prop_index');
+            $table->index('kdkab', 'musi_users_kab_index');
         });
     }
 
@@ -68,8 +53,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('musi_user');
-        Schema::dropIfExists('password_reset_tokens');
-        Schema::dropIfExists('sessions');
+        Schema::dropIfExists('musi_users');
     }
 };

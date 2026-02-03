@@ -219,6 +219,147 @@
             background: #000;
         }
         
+        /* Happy Birthday / Congratulatory Slide */
+        .slide-birthday {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #a18cd1 75%, #fbc2eb 100%) !important;
+            background-size: 400% 400%;
+            animation: birthdayGradient 8s ease infinite;
+        }
+        @keyframes birthdayGradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .slide-birthday .slide-overlay {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        .birthday-content {
+            text-align: center;
+            padding: 2rem;
+            max-width: 900px;
+        }
+        .birthday-content .birthday-title {
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 800;
+            color: #fff;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            margin-bottom: 0.5rem;
+            letter-spacing: 0.02em;
+        }
+        .birthday-content .birthday-subtitle {
+            font-size: clamp(1.25rem, 3.5vw, 2rem);
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+        .birthday-names {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem 2rem;
+            margin-top: 1.5rem;
+        }
+        .birthday-name-card {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 1rem 1.75rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            font-weight: 600;
+            font-size: clamp(1rem, 2.5vw, 1.35rem);
+            color: #333;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+        }
+        .birthday-name-card .nip {
+            display: block;
+            font-size: 0.85em;
+            font-weight: 500;
+            color: #666;
+            margin-top: 0.25rem;
+        }
+        .birthday-name-card .nmwil {
+            display: block;
+            font-size: 0.9em;
+            font-weight: 500;
+            color: #555;
+            margin-top: 0.35rem;
+        }
+        .birthday-empty {
+            font-size: clamp(1rem, 2.5vw, 1.25rem);
+            color: rgba(255, 255, 255, 0.9);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Kata Motivasi - Quote from big figure (full page) */
+        .slide-quote {
+            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%) !important;
+        }
+        .slide-quote .slide-overlay {
+            background: rgba(0, 0, 0, 0.2);
+        }
+        .quote-content {
+            max-width: 85%;
+            width: 100%;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        .quote-content .quote-section-title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.05em;
+        }
+        .quote-content .quote-mark-open {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(4rem, 15vw, 12rem);
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.15);
+            line-height: 1;
+            position: absolute;
+            top: -0.1em;
+            left: 0;
+        }
+        .quote-content .quote-mark-close {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(4rem, 15vw, 12rem);
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.15);
+            line-height: 1;
+            position: absolute;
+            bottom: -0.3em;
+            right: 0;
+        }
+        .quote-content .quote-text {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(1.25rem, 3.5vw, 2.25rem);
+            line-height: 1.6;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            margin: 1.5rem 0 2rem;
+            padding: 0 1rem;
+            font-style: italic;
+        }
+        .quote-content .quote-source {
+            font-size: clamp(1rem, 2.2vw, 1.5rem);
+            font-weight: 600;
+            color: #e8d5b7;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            margin-top: 1.5rem;
+        }
+        .quote-content .quote-source::before {
+            content: '— ';
+        }
+        .quote-placeholder {
+            font-size: clamp(1rem, 2.5vw, 1.35rem);
+            color: rgba(255, 255, 255, 0.7);
+            font-style: italic;
+        }
+        
         /* Speech Bubble Styles for Curhat Anon - frames fit content, each can have different size */
         .curhats-container {
             display: grid;
@@ -465,43 +606,61 @@
             </div>
         </div>
         
-        <!-- Slide 2 -->
-        <div class="slide" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+        @if(isset($birthday) && $birthday->isNotEmpty())
+        <!-- Slide 2 - Happy Birthday (Congratulatory) -->
+        <div class="slide slide-birthday">
             <div class="slide-overlay"></div>
-            <div class="slide-content text-center">
-                <h2>Innovation at Its Best</h2>
-                <p>Experience cutting-edge technology and solutions</p>
-                <a href="#" class="btn">Learn More</a>
+            <div class="birthday-content">
+                <h1 class="birthday-title">Selamat Ulang Tahun</h1>
+                <p class="birthday-subtitle">Semoga panjang umur, sehat selalu, dan sukses selalu!</p>
+                <div class="birthday-names">
+                    @foreach($birthday as $user)
+                        <div class="birthday-name-card">
+                            {{ $user->name }}
+                            <span class="nip">{{ $user->nip_baru }}</span>
+                            @if(!empty($user->nmwil))
+                                <span class="nmwil">{{ $user->nmwil }}</span>
+                            @endif
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+        </div>
+        @endif
+        
+        <!-- Slide 3 - Kata Motivasi (Quote from big figure) -->
+        <div class="slide slide-quote">
+            <div class="slide-overlay"></div>
+            <div class="quote-content">
+                <h2 class="quote-section-title">Kata Motivasi</h2>
+                @if(isset($kataMotivasi) && $kataMotivasi)
+                    <span class="quote-mark-open">"</span>
+                    <p class="quote-text">{{ $kataMotivasi->kata_motivasi }}</p>
+                    @if($kataMotivasi->dikutip_dari)
+                        <p class="quote-source">{{ $kataMotivasi->dikutip_dari }}</p>
+                    @endif
+                    <span class="quote-mark-close">"</span>
+                @else
+                    <p class="quote-placeholder">Tidak ada kata motivasi untuk ditampilkan.</p>
+                @endif
             </div>
         </div>
         
-        <!-- Slide 3 -->
-        <div class="slide" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
-            <div class="slide-overlay"></div>
-            <div class="slide-content text-center">
-                <h2>Your Success is Our Mission</h2>
-                <p>Join thousands of satisfied customers</p>
-                <a href="#" class="btn">Contact Us</a>
-            </div>
-        </div>
-        
-        <!-- Slide 4 -->
+        <!-- Slide 4 - Coming Soon -->
         <div class="slide" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-            <div class="slide-overlay"></div>
+            <div class="slide-overlay" style="background: rgba(0, 0, 0, 0.1);"></div>
             <div class="slide-content text-center dark-text">
-                <h2>Quality You Can Trust</h2>
-                <p>Premium services for premium results</p>
-                <a href="#" class="btn">Explore</a>
+                <h2>Masih Ada yang Datang!</h2>
+                <p>Halaman dan fitur baru sedang kami siapkan. Pantau terus, ya—tak lama lagi hadir untuk Anda.</p>
             </div>
         </div>
         
-        <!-- Slide 5 -->
+        <!-- Slide 5 - Curhat / Ide -->
         <div class="slide" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-            <div class="slide-overlay"></div>
+            <div class="slide-overlay" style="background: rgba(0, 0, 0, 0.15);"></div>
             <div class="slide-content text-center">
-                <h2>Start Your Journey Today</h2>
-                <p>Transform your ideas into reality</p>
-                <a href="#" class="btn">Sign Up</a>
+                <h2>Ada Ide? Yuk, Curhat!</h2>
+                <p>Punya gagasan untuk meningkatkan kinerja, kesehatan, dan kebahagiaan pegawai? Kami tunggu curhat dan masukan Anda.</p>
             </div>
         </div>
         
@@ -509,10 +668,12 @@
         <button class="prev" onclick="changeSlide(-1)">&#10094;</button>
         <button class="next" onclick="changeSlide(1)">&#10095;</button>
         
-        <!-- Dots Navigation -->
+        <!-- Dots Navigation (dot count matches visible slides) -->
         <div class="dots-container">
             <span class="dot active" onclick="currentSlide(1)"></span>
+            @if(isset($birthday) && $birthday->isNotEmpty())
             <span class="dot" onclick="currentSlide(2)"></span>
+            @endif
             <span class="dot" onclick="currentSlide(3)"></span>
             <span class="dot" onclick="currentSlide(4)"></span>
             <span class="dot" onclick="currentSlide(5)"></span>

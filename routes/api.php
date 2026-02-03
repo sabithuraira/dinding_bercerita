@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CurhatAnonController;
 use App\Http\Controllers\SpadaQuestionController;
 use App\Http\Controllers\SpadaAnswerController;
+use App\Http\Controllers\MusiUserController;
+use App\Http\Controllers\KataMotivasiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,3 +54,15 @@ Route::prefix('spada-answer')->group(function () {
 
 // Standard CRUD using apiResource (excludes create and edit routes)
 Route::apiResource('spada-answer', SpadaAnswerController::class);
+
+// MusiUser API Routes
+Route::prefix('musi-user')->group(function () {
+    Route::post('/destroy', [MusiUserController::class, 'destroy']);
+});
+Route::apiResource('musi-user', MusiUserController::class);
+
+// KataMotivasi API Routes
+Route::prefix('kata-motivasi')->group(function () {
+    Route::post('/destroy', [KataMotivasiController::class, 'destroy']);
+});
+Route::apiResource('kata-motivasi', KataMotivasiController::class);
