@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'Laravel') }} - Home</title>
+    <title>DINDING BERCERITA</title>
     
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -23,6 +23,21 @@
             width: 100vw;
         }
         
+        .page-title-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            padding: 0.75rem 1.5rem;
+            background: rgba(27, 27, 24, 0.9);
+            color: #fff;
+            text-align: center;
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
         .slideshow-container {
             position: relative;
             width: 100%;
@@ -579,6 +594,7 @@
     </style>
 </head>
 <body>
+    <header class="page-title-bar">DINDING BERCERITA</header>
     <div class="slideshow-container">
         <!-- Slide 1 - Curhat Anon -->
         <div class="slide active" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
