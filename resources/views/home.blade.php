@@ -379,7 +379,7 @@
         .curhats-container {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            grid-auto-rows: auto;
+            grid-auto-rows: minmax(100px, auto);
             gap: 1rem;
             width: 96%;
             max-width: 96%;
@@ -395,17 +395,17 @@
         /* Column count by item count: 1–2 items = same cols, 3 = 3 cols, 4–12 = 4 cols */
         .curhats-container.curhats-count-1 {
             grid-template-columns: 1fr;
-            grid-auto-rows: auto;
+            grid-auto-rows: minmax(100px, auto);
         }
         
         .curhats-container.curhats-count-2 {
             grid-template-columns: repeat(2, 1fr);
-            grid-auto-rows: auto;
+            grid-auto-rows: minmax(100px, auto);
         }
         
         .curhats-container.curhats-count-3 {
             grid-template-columns: repeat(3, 1fr);
-            grid-auto-rows: auto;
+            grid-auto-rows: minmax(100px, auto);
         }
         
         .curhats-container.curhats-count-4,
@@ -418,7 +418,12 @@
         .curhats-container.curhats-count-11,
         .curhats-container.curhats-count-12 {
             grid-template-columns: repeat(4, 1fr);
-            grid-auto-rows: auto;
+            grid-auto-rows: minmax(100px, auto);
+        }
+        
+        /* Metro-style: long content spans 2 rows so columns have different counts per column */
+        .speech-bubble.bubble-tall {
+            grid-row: span 2;
         }
         
         .speech-bubble {
@@ -605,10 +610,10 @@
                         $colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5', 'color-6', 'color-7', 'color-8', 'color-9'];
                     @endphp
                     @foreach($curhats as $index => $curhat)
-                        <div class="speech-bubble {{ $colors[$index % count($colors)] }}">
+                        <div class="speech-bubble {{ $colors[$index % count($colors)] }} {{ strlen($curhat->content) > 250 ? 'bubble-tall' : '' }}">
                             <span class="quote-start">"</span>
                             <span class="quote-end">"</span>
-                            <div class="bubble-content">{{ Str::limit($curhat->content, 200) }}</div>
+                            <div class="bubble-content">{{ $curhat->content }}</div>
                         </div>
                     @endforeach
                 @else
