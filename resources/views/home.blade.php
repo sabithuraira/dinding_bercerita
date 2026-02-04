@@ -781,6 +781,12 @@
         slideshowContainer.addEventListener('mouseleave', () => {
             resetInterval();
         });
+        
+        // Auto-refresh page every 10 minutes
+        const REFRESH_INTERVAL_MS = 10 * 60 * 1000; // 10 minutes
+        setTimeout(() => {
+            location.reload();
+        }, REFRESH_INTERVAL_MS);
     </script>
 </body>
 </html>
