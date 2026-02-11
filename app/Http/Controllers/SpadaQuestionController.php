@@ -170,4 +170,34 @@ class SpadaQuestionController extends Controller
 
         return response()->json(['success' => '0', 'message' => 'Gagal menghapus data']);
     }
+
+    /**
+     * Get one SpadaQuestion that is active today.
+     * Active means: start_active <= today AND last_active >= today.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getActiveToday(Request $request)
+    {
+        $today = now()->toDateString();
+
+        $model = SpadaQuestion::where('start_active', '<=', $today)
+            ->where('last_active', '>=', $today)
+            ->with('answers')
+            ->first();
+
+        if ($model === null) {
+            return response()->json([
+                'success' => '0',
+                'message' => 'Tidak ada pertanyaan yang aktif untuk hari ini.',
+                'data' => null,
+            ]);
+        }
+
+        return response()->json([
+            'success' => '1',
+            'data' => new SpadaQuestionResource($model),
+        ]);
+    }
 }

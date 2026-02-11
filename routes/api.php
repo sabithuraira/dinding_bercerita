@@ -37,6 +37,7 @@ Route::apiResource('curhat-anon', CurhatAnonController::class);
 // SpadaQuestion API Routes
 Route::prefix('spada-question')->group(function () {
     // Custom routes (can't use resource)
+    Route::get('/active-today', [SpadaQuestionController::class, 'getActiveToday']);
     Route::post('/load-data', [SpadaQuestionController::class, 'loadData']);
     Route::post('/destroy', [SpadaQuestionController::class, 'destroy']);
 });
