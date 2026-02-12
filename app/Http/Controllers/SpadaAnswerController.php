@@ -205,7 +205,7 @@ class SpadaAnswerController extends Controller
         if ($request->has('status_approve')) {
             $query->where('status_approve', (int) $request->get('status_approve'));
         }
-        $answers = $query->get();
+        $answers = $query->limit(1000)->get();
 
         return response()->json([
             'success' => '1',

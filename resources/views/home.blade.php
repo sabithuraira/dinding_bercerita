@@ -47,10 +47,10 @@
         
         .slide {
             position: absolute;
-            top: 0;
+            top: 3.5rem; /* Start below header "DINDING BERCERITA" so content never hits it */
             left: 0;
             width: 100%;
-            height: 100%;
+            height: calc(100vh - 3.5rem);
             opacity: 0;
             transition: opacity 1s ease-in-out;
             display: flex;
@@ -375,6 +375,103 @@
             font-style: italic;
         }
         
+        /* Slide 4 - Spada (active question + answers) */
+        .slide-spada {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
+        }
+        .slide-spada .slide-overlay {
+            background: rgba(0, 0, 0, 0.08);
+        }
+        .spada-container {
+            width: 96%;
+            max-height: 96%;
+            overflow: auto;
+            padding: 1rem;
+            text-align: center;
+            z-index: 2;
+        }
+        .spada-question-title {
+            font-size: clamp(1.1rem, 3vw, 1.75rem);
+            font-weight: 700;
+            color: #1b1b18;
+            margin-bottom: 1.25rem;
+            line-height: 1.4;
+        }
+        /* Sticky note style (type_question = 1) */
+        .spada-sticky-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+            gap: 1rem;
+            justify-content: center;
+            align-items: start;
+        }
+        .spada-sticky-note {
+            padding: 1rem;
+            border-radius: 2px;
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+            font-size: clamp(0.75rem, 1.5vw, 1rem);
+            line-height: 1.45;
+            color: #1b1b18;
+            text-align: left;
+            min-height: 80px;
+            transform: rotate(-1deg);
+            border: 1px solid rgba(0, 0, 0, 0.08);
+        }
+        .spada-sticky-note:nth-child(3n) { transform: rotate(1deg); }
+        .spada-sticky-note:nth-child(3n+2) { transform: rotate(-0.5deg); }
+        .spada-sticky-note.sticky-1 { background: #fff9c4; }
+        .spada-sticky-note.sticky-2 { background: #c8e6c9; }
+        .spada-sticky-note.sticky-3 { background: #ffccbc; }
+        .spada-sticky-note.sticky-4 { background: #b3e5fc; }
+        .spada-sticky-note.sticky-5 { background: #e1bee7; }
+        .spada-sticky-note.sticky-6 { background: #f8bbd0; }
+        .spada-sticky-note.sticky-7 { background: #d7ccc8; }
+        .spada-sticky-note.sticky-8 { background: #ffecb3; }
+        .spada-sticky-note.sticky-9 { background: #b2dfdb; }
+        /* Word cloud style (type_question = 2) - dense packing, colorful, size by count */
+        .spada-wordcloud {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            gap: 0.12rem 0.35rem;
+            padding: 0.75rem 0.5rem;
+            line-height: 1.15;
+            max-width: 100%;
+        }
+        .spada-wordcloud-item {
+            display: inline-block;
+            padding: 0.08rem 0.35rem;
+            font-weight: 600;
+            opacity: 0.95;
+            transition: transform 0.2s ease;
+            line-height: 1.2;
+            white-space: nowrap;
+        }
+        .spada-wordcloud-item:hover {
+            transform: scale(1.05);
+        }
+        .spada-wordcloud .size-1 { font-size: clamp(0.85rem, 1.8vw, 1.1rem); }
+        .spada-wordcloud .size-2 { font-size: clamp(1rem, 2.2vw, 1.35rem); }
+        .spada-wordcloud .size-3 { font-size: clamp(1.2rem, 2.8vw, 1.65rem); }
+        .spada-wordcloud .size-4 { font-size: clamp(1.4rem, 3.2vw, 1.9rem); }
+        .spada-wordcloud .size-5 { font-size: clamp(1.6rem, 3.8vw, 2.2rem); }
+        .spada-wordcloud-item.wc-color-1 { color: #1565c0; }
+        .spada-wordcloud-item.wc-color-2 { color: #c62828; }
+        .spada-wordcloud-item.wc-color-3 { color: #2e7d32; }
+        .spada-wordcloud-item.wc-color-4 { color: #6a1b9a; }
+        .spada-wordcloud-item.wc-color-5 { color: #e65100; }
+        .spada-wordcloud-item.wc-color-6 { color: #00838f; }
+        .spada-wordcloud-item.wc-color-7 { color: #bf360c; }
+        .spada-wordcloud-item.wc-color-8 { color: #283593; }
+        .spada-wordcloud-item.wc-color-9 { color: #004d40; }
+        .spada-empty {
+            font-size: clamp(0.95rem, 2vw, 1.15rem);
+            color: #333;
+            margin-top: 1rem;
+        }
+        
         /* Speech Bubble Styles for Curhat Anon - frames fit content, each can have different size */
         .curhats-container {
             display: grid;
@@ -667,14 +764,51 @@
             </div>
         </div>
         
-        <!-- Slide 4 - Coming Soon -->
-        <div class="slide" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
-            <div class="slide-overlay" style="background: rgba(0, 0, 0, 0.1);"></div>
-            <div class="slide-content text-center dark-text">
-                <h2>Masih Ada yang Datang!</h2>
-                <p>Halaman dan fitur baru sedang kami siapkan. Pantau terus, ya—tak lama lagi hadir untuk Anda.</p>
+        @if(isset($spadaActiveToday) && $spadaActiveToday)
+        <!-- Slide 4 - Spada (active question today + answers: sticky notes or word cloud) -->
+        <div class="slide slide-spada">
+            <div class="slide-overlay"></div>
+            <div class="spada-container">
+                <h2 class="spada-question-title">{{ $spadaActiveToday->question }}</h2>
+                @if($spadaActiveToday->type_question == 1)
+                    {{-- Sticky note style --}}
+                    @if($spadaActiveTodayAnswers->isNotEmpty())
+                        <div class="spada-sticky-grid">
+                            @php $stickyColors = ['sticky-1', 'sticky-2', 'sticky-3', 'sticky-4', 'sticky-5', 'sticky-6', 'sticky-7', 'sticky-8', 'sticky-9']; @endphp
+                            @foreach($spadaActiveTodayAnswers as $idx => $ans)
+                                <div class="spada-sticky-note {{ $stickyColors[$idx % count($stickyColors)] }}">{{ $ans->answer }}</div>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="spada-empty">Belum ada jawaban yang disetujui.</p>
+                    @endif
+                @else
+                    {{-- Word cloud style (type_question = 2): unique words, size by count, colorful --}}
+                    @if(isset($spadaWordCloud) && $spadaWordCloud->isNotEmpty())
+                        <div class="spada-wordcloud">
+                            @php
+                                $wcColors = ['wc-color-1', 'wc-color-2', 'wc-color-3', 'wc-color-4', 'wc-color-5', 'wc-color-6', 'wc-color-7', 'wc-color-8', 'wc-color-9'];
+                            @endphp
+                            @foreach($spadaWordCloud as $idx => $item)
+                                @php
+                                    $c = $item->count;
+                                    if ($c <= 2) { $sizeClass = 'size-1'; }
+                                    elseif ($c <= 5) { $sizeClass = 'size-2'; }
+                                    elseif ($c <= 10) { $sizeClass = 'size-3'; }
+                                    elseif ($c <= 20) { $sizeClass = 'size-4'; }
+                                    else { $sizeClass = 'size-5'; }
+                                    $colorClass = $wcColors[$idx % count($wcColors)];
+                                @endphp
+                                <span class="spada-wordcloud-item {{ $sizeClass }} {{ $colorClass }}">{{ $item->answer }}</span>
+                            @endforeach
+                        </div>
+                    @else
+                        <p class="spada-empty">Belum ada jawaban yang disetujui.</p>
+                    @endif
+                @endif
             </div>
         </div>
+        @endif
         
         <!-- Slide 5 - Curhat / Ide -->
         <div class="slide" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
@@ -696,7 +830,9 @@
             <span class="dot" onclick="currentSlide(2)"></span>
             @endif
             <span class="dot" onclick="currentSlide(3)"></span>
+            @if(isset($spadaActiveToday) && $spadaActiveToday)
             <span class="dot" onclick="currentSlide(4)"></span>
+            @endif
             <span class="dot" onclick="currentSlide(5)"></span>
         </div>
     </div>
@@ -738,9 +874,13 @@
         
         function resetInterval() {
             clearInterval(slideInterval);
+            const currentSlideEl = slides[currentSlideIndex];
+            const isSlide1 = currentSlideEl && currentSlideEl.querySelector('.curhats-container');
+            const isSlide4 = currentSlideEl && currentSlideEl.classList.contains('slide-spada');
+            const delayMs = (isSlide1 || isSlide4) ? 60 * 1000 : 5000; // 1 min for slide 1 & 4, 5 sec for others
             slideInterval = setInterval(() => {
                 changeSlide(1);
-            }, 5000); // Change slide every 5 seconds
+            }, delayMs);
         }
         
         // Keyboard navigation
