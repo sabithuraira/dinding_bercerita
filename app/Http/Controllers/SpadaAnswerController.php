@@ -64,7 +64,7 @@ class SpadaAnswerController extends Controller
     public function store(Request $request)
     {
         // Validate question_id exists
-        $questionId = $request->form_question_id ?? $request->question_id;
+        $questionId =  $request->question_id;
         if ($questionId) {
             $question = SpadaQuestion::find($questionId);
             if ($question == null) {
@@ -82,9 +82,9 @@ class SpadaAnswerController extends Controller
             }
         }
 
-        $model->question_id = $questionId ?? $request->form_question_id ?? $request->question_id;
-        $model->answer = $request->form_answer ?? $request->answer;
-        $model->status_approve = (int) ($request->get('status_approve') ?? $request->get('form_status_approve') ?? 2);
+        $model->question_id = $questionId;
+        $model->answer = $request->answer;
+        $model->status_approve = (int) $request->status_approve ?? 2;
         
         if ($model->save()) {
             return response()->json([
