@@ -48,6 +48,7 @@ Route::apiResource('spada-question', SpadaQuestionController::class);
 // SpadaAnswer API Routes
 Route::prefix('spada-answer')->group(function () {
     // Custom routes (can't use resource)
+    Route::post('/status-approve', [SpadaAnswerController::class, 'updateStatusApprove']);
     Route::post('/load-data', [SpadaAnswerController::class, 'loadData']);
     Route::post('/destroy', [SpadaAnswerController::class, 'destroy']);
     Route::get('/question/{questionId}', [SpadaAnswerController::class, 'getByQuestion']);

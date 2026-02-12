@@ -14,7 +14,12 @@ class SpadaAnswer extends Model
 
     protected $fillable = [
         'question_id',
-        'answer'
+        'answer',
+        'status_approve',
+    ];
+
+    protected $casts = [
+        'status_approve' => 'integer',
     ];
 
     /**

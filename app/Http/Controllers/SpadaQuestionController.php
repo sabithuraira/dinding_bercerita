@@ -22,7 +22,7 @@ class SpadaQuestionController extends Controller
         $filterTypeQuestion = $request->get('filter_type_question');
         $withAnswers = $request->get('with_answers', false);
         
-        $query = SpadaQuestion::orderBy('created_at', 'desc');
+        $query = SpadaQuestion::orderBy('id', 'desc');
         
         // Apply filters if provided
         if ($filterSatker && $filterSatker !== '') {

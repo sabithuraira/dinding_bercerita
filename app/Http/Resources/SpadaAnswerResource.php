@@ -18,8 +18,9 @@ class SpadaAnswerResource extends JsonResource
             'id' => $this->id,
             'question_id' => $this->question_id,
             'answer' => $this->answer,
-            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
-            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
+            'status_approve' => $this->status_approve,
+            'created_at' => $this->created_at ? $this->created_at->format('Y-m-d H:i:s') : null,
+            'updated_at' => $this->updated_at ? $this->updated_at->format('Y-m-d H:i:s') : null,
             'question' => new SpadaQuestionResource($this->whenLoaded('question')),
         ];
     }

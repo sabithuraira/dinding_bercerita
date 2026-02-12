@@ -20,6 +20,7 @@ class SpadaAnswerController extends Controller
         $perPage = $request->get('per_page', 10);
         $page = $request->get('page') ?? $request->get('p') ?? $request->get('page_num') ?? 1;
         $filterQuestionId = $request->get('filter_question_id');
+        $filterStatusApprove = $request->get('filter_status_approve');
         $withQuestion = $request->get('with_question', false);
         
         $query = SpadaAnswer::orderBy('created_at', 'desc');
@@ -27,6 +28,10 @@ class SpadaAnswerController extends Controller
         // Apply filter if provided
         if ($filterQuestionId && $filterQuestionId !== '') {
             $query->where('question_id', $filterQuestionId);
+        }
+        
+        if ($filterStatusApprove !== null && $filterStatusApprove !== '') {
+            $query->where('status_approve', $filterStatusApprove);
         }
         
         // Load question if requested
@@ -79,6 +84,7 @@ class SpadaAnswerController extends Controller
 
         $model->question_id = $questionId ?? $request->form_question_id ?? $request->question_id;
         $model->answer = $request->form_answer ?? $request->answer;
+        $model->status_approve = (int) ($request->get('status_approve') ?? $request->get('form_status_approve') ?? 2);
         
         if ($model->save()) {
             return response()->json([
@@ -137,6 +143,9 @@ class SpadaAnswerController extends Controller
 
         $model->question_id = $questionId ?? $model->question_id;
         $model->answer = $request->form_answer ?? $request->answer ?? $model->answer;
+        if ($request->has('status_approve') || $request->has('form_status_approve')) {
+            $model->status_approve = (int) ($request->get('status_approve') ?? $request->get('form_status_approve') ?? $model->status_approve);
+        }
         
         if ($model->save()) {
             return response()->json([
@@ -184,7 +193,7 @@ class SpadaAnswerController extends Controller
      * @param  int  $questionId
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getByQuestion($questionId)
+    public function getByQuestion(Request $request, $questionId)
     {
         $question = SpadaQuestion::find($questionId);
         
@@ -192,13 +201,56 @@ class SpadaAnswerController extends Controller
             return response()->json(['success' => '0', 'message' => 'Question tidak ditemukan']);
         }
 
-        $answers = SpadaAnswer::where('question_id', $questionId)
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $query = SpadaAnswer::where('question_id', $questionId)->orderBy('created_at', 'desc');
+        if ($request->has('status_approve')) {
+            $query->where('status_approve', (int) $request->get('status_approve'));
+        }
+        $answers = $query->get();
 
         return response()->json([
             'success' => '1',
             'datas' => SpadaAnswerResource::collection($answers)
+        ]);
+    }
+
+    /**
+     * Update status_approve to 1 or 2 for one or multiple answers (bulk).
+     * Body: status_approve (1 or 2), ids (array of id) or id (single id).
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function updateStatusApprove(Request $request)
+    {
+        $status = (int) ($request->get('status_approve') ?? $request->get('form_status_approve'));
+        if (! in_array($status, [1, 2], true)) {
+            return response()->json([
+                'success' => '0',
+                'message' => 'status_approve harus 1 atau 2.',
+            ], 422);
+        }
+
+        $ids = $request->get('ids') ?? $request->get('form_ids');
+        if (is_array($ids)) {
+            $idList = array_map('intval', array_filter($ids));
+        } else {
+            $singleId = $request->get('id') ?? $request->get('form_id_data');
+            $idList = $singleId !== null && $singleId !== '' ? [(int) $singleId] : [];
+        }
+
+        if (empty($idList)) {
+            return response()->json([
+                'success' => '0',
+                'message' => 'Parameter ids atau id wajib diisi.',
+            ], 422);
+        }
+
+        $updated = SpadaAnswer::whereIn('id', $idList)->update(['status_approve' => $status]);
+
+        return response()->json([
+            'success' => '1',
+            'message' => 'Status berhasil diupdate.',
+            'updated_count' => $updated,
         ]);
     }
 }
