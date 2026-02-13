@@ -23,6 +23,7 @@
             width: 100vw;
         }
         
+        /* Page palette: white, yellow, black, gray only */
         .page-title-bar {
             position: fixed;
             top: 0;
@@ -30,8 +31,8 @@
             right: 0;
             z-index: 100;
             padding: 0.75rem 1.5rem;
-            background: rgba(27, 27, 24, 0.9);
-            color: #fff;
+            background: #333333;
+            color: #FFFFFF;
             text-align: center;
             font-size: clamp(1rem, 2.5vw, 1.5rem);
             font-weight: 700;
@@ -71,8 +72,8 @@
             width: 100%;
             padding: 2rem;
             text-align: center;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            color: #333333;
+            text-shadow: none;
             z-index: 2;
         }
         
@@ -98,8 +99,8 @@
         .slide-content .btn {
             display: inline-block;
             padding: 1rem 2rem;
-            background: rgba(255, 255, 255, 0.9);
-            color: #1b1b18;
+            background: #333333;
+            color: #FFFFFF;
             text-decoration: none;
             border-radius: 0.5rem;
             font-weight: 600;
@@ -109,9 +110,10 @@
         }
         
         .slide-content .btn:hover {
-            background: white;
+            background: #333333;
+            color: #FFFFFF;
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         }
         
         .slide-overlay {
@@ -120,7 +122,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.3);
+            background: transparent;
             z-index: 1;
         }
         
@@ -139,28 +141,29 @@
             width: 12px;
             height: 12px;
             border-radius: 50%;
-            background: rgba(255, 255, 255, 0.5);
+            background: #C4C4C4;
             cursor: pointer;
             transition: all 0.3s ease;
-            border: 2px solid rgba(255, 255, 255, 0.8);
+            border: 2px solid #333333;
         }
         
         .dot.active {
-            background: white;
+            background: #333333;
+            border-color: #333333;
             transform: scale(1.2);
         }
         
         .dot:hover {
-            background: rgba(255, 255, 255, 0.8);
+            background: #333333;
         }
         
-        /* Navigation Arrows */
+        /* Navigation Arrows - black/gray/white palette */
         .prev, .next {
             position: absolute;
             top: 50%;
             transform: translateY(-50%);
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+            background: #333333;
+            color: #FFFFFF;
             border: none;
             padding: 1.5rem 1rem;
             cursor: pointer;
@@ -168,7 +171,6 @@
             font-weight: bold;
             z-index: 10;
             transition: all 0.3s ease;
-            backdrop-filter: blur(10px);
         }
         
         .prev {
@@ -182,7 +184,31 @@
         }
         
         .prev:hover, .next:hover {
-            background: rgba(255, 255, 255, 0.4);
+            background: #333333;
+            color: #FFFFFF;
+        }
+        
+        /* When Slide 1 (orange) is active: adapt dots and arrows to sit on orange */
+        .slideshow-container:has(.slide-1.active) .dot {
+            background: #FFFFFF;
+            border-color: #333333;
+        }
+        .slideshow-container:has(.slide-1.active) .dot.active {
+            background: #333333;
+            border-color: #333333;
+        }
+        .slideshow-container:has(.slide-1.active) .dot:hover {
+            background: #C4C4C4;
+        }
+        .slideshow-container:has(.slide-1.active) .prev,
+        .slideshow-container:has(.slide-1.active) .next {
+            background: #333333;
+            color: #FFFFFF;
+        }
+        .slideshow-container:has(.slide-1.active) .prev:hover,
+        .slideshow-container:has(.slide-1.active) .next:hover {
+            background: #333333;
+            color: #FFFFFF;
         }
         
         /* Responsive adjustments */
@@ -221,32 +247,26 @@
         }
         
         .slide-content.dark-text {
-            color: #1b1b18;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.5);
+            color: #333333;
+            text-shadow: none;
         }
         
         .slide-content.dark-text .btn {
-            background: #1b1b18;
-            color: white;
+            background: #333333;
+            color: #FFFFFF;
         }
         
         .slide-content.dark-text .btn:hover {
-            background: #000;
+            background: #333333;
+            color: #FFFFFF;
         }
         
-        /* Happy Birthday / Congratulatory Slide */
+        /* Happy Birthday - yellow bg, white/black/gray text */
         .slide-birthday {
-            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 25%, #fecfef 50%, #a18cd1 75%, #fbc2eb 100%) !important;
-            background-size: 400% 400%;
-            animation: birthdayGradient 8s ease infinite;
-        }
-        @keyframes birthdayGradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            background: #F0B940 !important;
         }
         .slide-birthday .slide-overlay {
-            background: rgba(255, 255, 255, 0.15);
+            background: transparent;
         }
         .birthday-content {
             text-align: center;
@@ -256,16 +276,16 @@
         .birthday-content .birthday-title {
             font-size: clamp(2rem, 6vw, 4rem);
             font-weight: 800;
-            color: #fff;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            color: #333333;
+            text-shadow: none;
             margin-bottom: 0.5rem;
             letter-spacing: 0.02em;
         }
         .birthday-content .birthday-subtitle {
             font-size: clamp(1.25rem, 3.5vw, 2rem);
             font-weight: 600;
-            color: rgba(255, 255, 255, 0.95);
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            color: #333333;
+            text-shadow: none;
             margin-bottom: 2rem;
         }
         .birthday-names {
@@ -276,41 +296,41 @@
             margin-top: 1.5rem;
         }
         .birthday-name-card {
-            background: rgba(255, 255, 255, 0.9);
+            background: #FFFFFF;
             padding: 1rem 1.75rem;
             border-radius: 1rem;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
             font-weight: 600;
             font-size: clamp(1rem, 2.5vw, 1.35rem);
-            color: #333;
-            border: 2px solid rgba(255, 255, 255, 0.8);
+            color: #333333;
+            border: 2px solid #333333;
         }
         .birthday-name-card .nip {
             display: block;
             font-size: 0.85em;
             font-weight: 500;
-            color: #666;
+            color: #333333;
             margin-top: 0.25rem;
         }
         .birthday-name-card .nmwil {
             display: block;
             font-size: 0.9em;
             font-weight: 500;
-            color: #555;
+            color: #333333;
             margin-top: 0.35rem;
         }
         .birthday-empty {
             font-size: clamp(1rem, 2.5vw, 1.25rem);
-            color: rgba(255, 255, 255, 0.9);
-            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+            color: #333333;
+            text-shadow: none;
         }
         
-        /* Kata Motivasi - Quote from big figure (full page) */
+        /* Kata Motivasi - same as Slide 5: yellow bg, dark text */
         .slide-quote {
-            background: linear-gradient(145deg, #1a1a2e 0%, #16213e 40%, #0f3460 100%) !important;
+            background: #F0B940 !important;
         }
         .slide-quote .slide-overlay {
-            background: rgba(0, 0, 0, 0.2);
+            background: transparent;
         }
         .quote-content {
             max-width: 85%;
@@ -323,8 +343,8 @@
         .quote-content .quote-section-title {
             font-size: clamp(1.5rem, 4vw, 2.5rem);
             font-weight: 700;
-            color: #fff;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            color: #333333;
+            text-shadow: none;
             margin-bottom: 1.5rem;
             letter-spacing: 0.05em;
         }
@@ -332,7 +352,7 @@
             font-family: Georgia, 'Times New Roman', serif;
             font-size: clamp(4rem, 15vw, 12rem);
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.15);
+            color: rgba(51, 51, 51, 0.15);
             line-height: 1;
             position: absolute;
             top: -0.1em;
@@ -342,7 +362,7 @@
             font-family: Georgia, 'Times New Roman', serif;
             font-size: clamp(4rem, 15vw, 12rem);
             font-weight: 700;
-            color: rgba(255, 255, 255, 0.15);
+            color: rgba(51, 51, 51, 0.15);
             line-height: 1;
             position: absolute;
             bottom: -0.3em;
@@ -352,8 +372,8 @@
             font-family: Georgia, 'Times New Roman', serif;
             font-size: clamp(1.25rem, 3.5vw, 2.25rem);
             line-height: 1.6;
-            color: #fff;
-            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            color: #333333;
+            text-shadow: none;
             margin: 1.5rem 0 2rem;
             padding: 0 1rem;
             font-style: italic;
@@ -361,7 +381,7 @@
         .quote-content .quote-source {
             font-size: clamp(1rem, 2.2vw, 1.5rem);
             font-weight: 600;
-            color: #e8d5b7;
+            color: #333333;
             letter-spacing: 0.08em;
             text-transform: uppercase;
             margin-top: 1.5rem;
@@ -371,16 +391,16 @@
         }
         .quote-placeholder {
             font-size: clamp(1rem, 2.5vw, 1.35rem);
-            color: rgba(255, 255, 255, 0.7);
+            color: #333333;
             font-style: italic;
         }
         
-        /* Slide 4 - Spada (active question + answers) */
+        /* Slide 4 - Spada: white bg, text yellow/black/gray only */
         .slide-spada {
-            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%) !important;
+            background: #FFFFFF !important;
         }
         .slide-spada .slide-overlay {
-            background: rgba(0, 0, 0, 0.08);
+            background: transparent;
         }
         .spada-container {
             width: 96%;
@@ -390,17 +410,59 @@
             text-align: center;
             z-index: 2;
         }
-        .spada-question-title {
-            font-size: clamp(1.1rem, 3vw, 1.75rem);
-            font-weight: 700;
-            color: #1b1b18;
-            margin-bottom: 1.25rem;
-            line-height: 1.4;
+        .spada-section-title {
+            font-size: clamp(1.75rem, 5vw, 2.75rem);
+            font-weight: 800;
+            color: #333333;
+            margin-bottom: 0.75rem;
+            line-height: 1.2;
+            letter-spacing: 0.02em;
         }
-        /* Sticky note style (type_question = 1) */
+        .spada-question-card {
+            display: inline-block;
+            max-width: 90%;
+            padding: 1.5rem 2.25rem 1.5rem 2.25rem;
+            margin-bottom: 1.5rem;
+            background: #F0B940;
+            border-radius: 1rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15), 0 0 0 3px rgba(51, 51, 51, 0.2);
+            position: relative;
+            border-left: 5px solid #333333;
+            text-align: left;
+        }
+        .spada-question-card::before {
+            content: '?';
+            position: absolute;
+            top: 50%;
+            right: 1.25rem;
+            transform: translateY(-50%);
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 800;
+            color: rgba(51, 51, 51, 0.12);
+            line-height: 1;
+            font-family: Georgia, serif;
+        }
+        .spada-question-label {
+            display: block;
+            font-size: clamp(0.7rem, 1.5vw, 0.85rem);
+            font-weight: 700;
+            color: #333333;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+        }
+        .spada-question-title {
+            font-size: clamp(1.1rem, 2.8vw, 1.6rem);
+            font-weight: 700;
+            color: #333333;
+            margin: 0;
+            line-height: 1.45;
+            font-style: italic;
+        }
+        /* Sticky note style (type_question = 1) - white/yellow/gray only */
         .spada-sticky-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr));
             gap: 1rem;
             justify-content: center;
             align-items: start;
@@ -408,41 +470,41 @@
         .spada-sticky-note {
             padding: 1rem;
             border-radius: 2px;
-            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.15);
+            box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);
             font-size: clamp(0.75rem, 1.5vw, 1rem);
             line-height: 1.45;
-            color: #1b1b18;
+            color: #333333;
             text-align: left;
             min-height: 80px;
             transform: rotate(-1deg);
-            border: 1px solid rgba(0, 0, 0, 0.08);
+            border: 1px solid #C4C4C4;
         }
         .spada-sticky-note:nth-child(3n) { transform: rotate(1deg); }
         .spada-sticky-note:nth-child(3n+2) { transform: rotate(-0.5deg); }
-        .spada-sticky-note.sticky-1 { background: #fff9c4; }
-        .spada-sticky-note.sticky-2 { background: #c8e6c9; }
-        .spada-sticky-note.sticky-3 { background: #ffccbc; }
-        .spada-sticky-note.sticky-4 { background: #b3e5fc; }
-        .spada-sticky-note.sticky-5 { background: #e1bee7; }
-        .spada-sticky-note.sticky-6 { background: #f8bbd0; }
-        .spada-sticky-note.sticky-7 { background: #d7ccc8; }
-        .spada-sticky-note.sticky-8 { background: #ffecb3; }
-        .spada-sticky-note.sticky-9 { background: #b2dfdb; }
-        /* Word cloud style (type_question = 2) - dense packing, colorful, size by count */
+        .spada-sticky-note.sticky-1 { background: #F0B940; }
+        .spada-sticky-note.sticky-2 { background: #F0B940; }
+        .spada-sticky-note.sticky-3 { background: #C4C4C4; }
+        .spada-sticky-note.sticky-4 { background: #C4C4C4; }
+        .spada-sticky-note.sticky-5 { background: #F0B940; }
+        .spada-sticky-note.sticky-6 { background: #C4C4C4; }
+        .spada-sticky-note.sticky-7 { background: #C4C4C4; color: #333333; }
+        .spada-sticky-note.sticky-8 { background: #F0B940; }
+        .spada-sticky-note.sticky-9 { background: #FFFFFF; }
+        /* Word cloud style (type_question = 2) - dense packing, very close spacing */
         .spada-wordcloud {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             align-items: center;
             align-content: center;
-            gap: 0.12rem 0.35rem;
-            padding: 0.75rem 0.5rem;
-            line-height: 1.15;
+            gap: 0.05rem 0.15rem;
+            padding: 0.5rem 0.35rem;
+            line-height: 1.1;
             max-width: 100%;
         }
         .spada-wordcloud-item {
             display: inline-block;
-            padding: 0.08rem 0.35rem;
+            padding: 0.04rem 0.18rem;
             font-weight: 600;
             opacity: 0.95;
             transition: transform 0.2s ease;
@@ -452,23 +514,25 @@
         .spada-wordcloud-item:hover {
             transform: scale(1.05);
         }
-        .spada-wordcloud .size-1 { font-size: clamp(0.85rem, 1.8vw, 1.1rem); }
-        .spada-wordcloud .size-2 { font-size: clamp(1rem, 2.2vw, 1.35rem); }
-        .spada-wordcloud .size-3 { font-size: clamp(1.2rem, 2.8vw, 1.65rem); }
-        .spada-wordcloud .size-4 { font-size: clamp(1.4rem, 3.2vw, 1.9rem); }
-        .spada-wordcloud .size-5 { font-size: clamp(1.6rem, 3.8vw, 2.2rem); }
-        .spada-wordcloud-item.wc-color-1 { color: #1565c0; }
-        .spada-wordcloud-item.wc-color-2 { color: #c62828; }
-        .spada-wordcloud-item.wc-color-3 { color: #2e7d32; }
-        .spada-wordcloud-item.wc-color-4 { color: #6a1b9a; }
-        .spada-wordcloud-item.wc-color-5 { color: #e65100; }
-        .spada-wordcloud-item.wc-color-6 { color: #00838f; }
-        .spada-wordcloud-item.wc-color-7 { color: #bf360c; }
-        .spada-wordcloud-item.wc-color-8 { color: #283593; }
-        .spada-wordcloud-item.wc-color-9 { color: #004d40; }
+        /* Word cloud sizes: each step ~80% bigger than previous for clear prominence */
+        .spada-wordcloud .size-1 { font-size: clamp(0.7rem, 1.5vw, 0.9rem); }
+        .spada-wordcloud .size-2 { font-size: clamp(1.25rem, 2.7vw, 1.6rem); }
+        .spada-wordcloud .size-3 { font-size: clamp(2.2rem, 4.8vw, 2.9rem); }
+        .spada-wordcloud .size-4 { font-size: clamp(3.2rem, 6.5vw, 4rem); }
+        .spada-wordcloud .size-5 { font-size: clamp(4.5rem, 9vw, 5.5rem); }
+        /* Word cloud colors: yellow, black, grays only (white bg) */
+        .spada-wordcloud-item.wc-color-1 { color: #F0B940; }
+        .spada-wordcloud-item.wc-color-2 { color: #333333; }
+        .spada-wordcloud-item.wc-color-3 { color: #333333; }
+        .spada-wordcloud-item.wc-color-4 { color: #333333; }
+        .spada-wordcloud-item.wc-color-5 { color: #F0B940; }
+        .spada-wordcloud-item.wc-color-6 { color: #333333; }
+        .spada-wordcloud-item.wc-color-7 { color: #C4C4C4; }
+        .spada-wordcloud-item.wc-color-8 { color: #333333; }
+        .spada-wordcloud-item.wc-color-9 { color: #C4C4C4; }
         .spada-empty {
             font-size: clamp(0.95rem, 2vw, 1.15rem);
-            color: #333;
+            color: #333333;
             margin-top: 1rem;
         }
         
@@ -525,11 +589,11 @@
         
         .speech-bubble {
             position: relative;
-            background: white;
-            border: 2px solid #1b1b18;
+            background: #FFFFFF;
+            border: none;
             border-radius: 1vw;
             padding: 1rem;
-            box-shadow: 0 0.3vw 0.8vw rgba(0, 0, 0, 0.15);
+            box-shadow: 0 0.3vw 0.8vw rgba(0, 0, 0, 0.1);
             display: flex;
             flex-direction: column;
             min-height: fit-content;
@@ -542,7 +606,7 @@
             left: 3%;
             font-size: 4vw;
             font-weight: 900;
-            color: #1b1b18;
+            color: #333333;
             line-height: 1;
             font-family: Georgia, serif;
             opacity: 0.4;
@@ -555,7 +619,7 @@
             right: 3%;
             font-size: 4vw;
             font-weight: 900;
-            color: #1b1b18;
+            color: #333333;
             line-height: 1;
             font-family: Georgia, serif;
             opacity: 0.4;
@@ -566,7 +630,7 @@
             font-size: clamp(0.6rem, 1.8vw, 1.25rem);
             font-weight: 700;
             text-transform: uppercase;
-            color: #1b1b18;
+            color: #333333;
             margin-bottom: 0.5rem;
             letter-spacing: 0.05em;
             position: relative;
@@ -578,57 +642,48 @@
         .speech-bubble .bubble-content {
             font-size: clamp(0.5rem, 1.2vw, 1rem);
             line-height: 1.5;
-            color: #1b1b18;
+            color: #333333;
             position: relative;
             z-index: 2;
             text-align: justify;
             flex: 0 1 auto;
         }
         
-        /* Color variations for speech bubbles - matching image colors */
+        /* Speech bubbles: white, yellow, gray only */
         .speech-bubble.color-1 {
-            background: #FFE066;
-            border-color: #1b1b18;
+            background: #F0B940;
         }
         
         .speech-bubble.color-2 {
-            background: #A8E6CF;
-            border-color: #1b1b18;
+            background: #FFFFFF;
         }
         
         .speech-bubble.color-3 {
-            background: #FFD3B6;
-            border-color: #1b1b18;
+            background: #C4C4C4;
         }
         
         .speech-bubble.color-4 {
-            background: #C7CEEA;
-            border-color: #1b1b18;
+            background: #F0B940;
         }
         
         .speech-bubble.color-5 {
-            background: #FFAAA5;
-            border-color: #1b1b18;
+            background: #C4C4C4;
         }
         
         .speech-bubble.color-6 {
-            background: #FFB6C1;
-            border-color: #1b1b18;
+            background: #C4C4C4;
         }
         
         .speech-bubble.color-7 {
-            background: #B5EAD7;
-            border-color: #1b1b18;
+            background: #F0B940;
         }
         
         .speech-bubble.color-8 {
-            background: #FFD93D;
-            border-color: #1b1b18;
+            background: #F0B940;
         }
         
         .speech-bubble.color-9 {
-            background: #95E1D3;
-            border-color: #1b1b18;
+            background: #C4C4C4;
         }
         
         /* Add tail/pointer to speech bubble - percentage-based */
@@ -645,17 +700,39 @@
             z-index: 0;
         }
         
-        .speech-bubble.color-1::after { border-top-color: #FFE066; }
-        .speech-bubble.color-2::after { border-top-color: #A8E6CF; }
-        .speech-bubble.color-3::after { border-top-color: #FFD3B6; }
-        .speech-bubble.color-4::after { border-top-color: #C7CEEA; }
-        .speech-bubble.color-5::after { border-top-color: #FFAAA5; }
-        .speech-bubble.color-6::after { border-top-color: #FFB6C1; }
-        .speech-bubble.color-7::after { border-top-color: #B5EAD7; }
-        .speech-bubble.color-8::after { border-top-color: #FFD93D; }
-        .speech-bubble.color-9::after { border-top-color: #95E1D3; }
+        .speech-bubble.color-1::after { border-top-color: #F0B940; }
+        .speech-bubble.color-2::after { border-top-color: #FFFFFF; }
+        .speech-bubble.color-3::after { border-top-color: #C4C4C4; }
+        .speech-bubble.color-4::after { border-top-color: #F0B940; }
+        .speech-bubble.color-5::after { border-top-color: #C4C4C4; }
+        .speech-bubble.color-6::after { border-top-color: #C4C4C4; }
+        .speech-bubble.color-7::after { border-top-color: #F0B940; }
+        .speech-bubble.color-8::after { border-top-color: #F0B940; }
+        .speech-bubble.color-9::after { border-top-color: #C4C4C4; }
         
-        /* Border for tail */
+        /* Slide 1: adapt content for dark/orange background */
+        .slide-1 .speech-bubble {
+            box-shadow: 0 0.3vw 0.8vw rgba(0, 0, 0, 0.25);
+        }
+        .slide-1 .speech-bubble .bubble-content,
+        .slide-1 .speech-bubble .bubble-heading {
+            color: #333333;
+        }
+        .slide-1 .speech-bubble .quote-start,
+        .slide-1 .speech-bubble .quote-end {
+            color: #333333;
+        }
+        .slide-1 .speech-bubble.color-1::after { border-top-color: #F0B940; }
+        .slide-1 .speech-bubble.color-2::after { border-top-color: #FFFFFF; }
+        .slide-1 .speech-bubble.color-3::after { border-top-color: #C4C4C4; }
+        .slide-1 .speech-bubble.color-4::after { border-top-color: #F0B940; }
+        .slide-1 .speech-bubble.color-5::after { border-top-color: #C4C4C4; }
+        .slide-1 .speech-bubble.color-6::after { border-top-color: #C4C4C4; }
+        .slide-1 .speech-bubble.color-7::after { border-top-color: #F0B940; }
+        .slide-1 .speech-bubble.color-8::after { border-top-color: #F0B940; }
+        .slide-1 .speech-bubble.color-9::after { border-top-color: #C4C4C4; }
+        
+        /* Tail under card: no border (border removed) */
         .speech-bubble::before {
             content: '';
             position: absolute;
@@ -665,7 +742,7 @@
             height: 0;
             border-left: 1.1vw solid transparent;
             border-right: 1.1vw solid transparent;
-            border-top: 1.1vw solid #1b1b18;
+            border-top: 1.1vw solid transparent;
             z-index: -1;
         }
         
@@ -693,14 +770,47 @@
                 font-size: clamp(0.45rem, 2vw, 0.85rem);
             }
         }
+        
+        /* Scroll hint icon for slides with scrollable content */
+        .scroll-hint {
+            position: absolute;
+            bottom: 3rem;
+            right: 1.5rem;
+            z-index: 5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            color: #333333;
+            opacity: 0.85;
+            pointer-events: none;
+        }
+        .scroll-hint-icon {
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 14px solid currentColor;
+            animation: scroll-hint-bounce 2s ease-in-out infinite;
+        }
+        @keyframes scroll-hint-bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(6px); }
+        }
+        .scroll-hint-text {
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
     </style>
 </head>
 <body>
     <header class="page-title-bar">DINDING BERCERITA</header>
     <div class="slideshow-container">
-        <!-- Slide 1 - Curhat Anon -->
-        <div class="slide active" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
-            <div class="slide-overlay" style="background: rgba(0, 0, 0, 0.05);"></div>
+        <!-- Slide 1 - Curhat Anon (orange bg) -->
+        <div class="slide slide-1 active" style="background: #FF9800;">
+            <div class="slide-overlay"></div>
             <div class="curhats-container curhats-count-{{ isset($curhats) ? min($curhats->count(), 12) : 1 }}">
                 @if(isset($curhats) && $curhats->count() > 0)
                     @php
@@ -769,7 +879,11 @@
         <div class="slide slide-spada">
             <div class="slide-overlay"></div>
             <div class="spada-container">
-                <h2 class="spada-question-title">{{ $spadaActiveToday->question }}</h2>
+                <h1 class="spada-section-title">SPADA, Satu Pertanyaan Aspirasi dan Afirmasi</h1>
+                <div class="spada-question-card">
+                    <span class="spada-question-label">Pertanyaan</span>
+                    <h2 class="spada-question-title">{{ $spadaActiveToday->question }}</h2>
+                </div>
                 @if($spadaActiveToday->type_question == 1)
                     {{-- Sticky note style --}}
                     @if($spadaActiveTodayAnswers->isNotEmpty())
@@ -807,12 +921,16 @@
                     @endif
                 @endif
             </div>
+            <div class="scroll-hint" aria-hidden="true">
+                <span class="scroll-hint-icon"></span>
+                <span class="scroll-hint-text">Scroll Down</span>
+            </div>
         </div>
         @endif
         
-        <!-- Slide 5 - Curhat / Ide -->
-        <div class="slide" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
-            <div class="slide-overlay" style="background: rgba(0, 0, 0, 0.15);"></div>
+        <!-- Slide 5 - Curhat / Ide (yellow bg, black/gray text) -->
+        <div class="slide" style="background: #F0B940;">
+            <div class="slide-overlay"></div>
             <div class="slide-content text-center">
                 <h2>Ada Ide? Yuk, Curhat!</h2>
                 <p>Punya gagasan untuk meningkatkan kinerja, kesehatan, dan kebahagiaan pegawai? Kami tunggu curhat dan masukan Anda.</p>
