@@ -7,6 +7,8 @@ use App\Models\KataMotivasi;
 use App\Models\MusiUser;
 use App\Models\SpadaAnswer;
 use App\Models\SpadaQuestion;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
@@ -73,5 +75,91 @@ class HomeController extends Controller
             'spadaActiveTodayAnswers' => $spadaActiveTodayAnswers,
             'spadaWordCloud' => $spadaWordCloud,
         ]);
+    }
+
+    /**
+     * Show form to submit SpadaAnswer for the active question today (start_active <= today <= last_active).
+     */
+    public function spadaForm(): View|RedirectResponse
+    {
+        if (! class_exists(SpadaQuestion::class)) {
+            return redirect('/')->with('message', 'SPADA tidak tersedia.');
+        }
+
+        $today = now()->toDateString();
+        $question = SpadaQuestion::where('start_active', '<=', $today)
+            ->where('last_active', '>=', $today)
+            ->first();
+
+        if (! $question) {
+            return redirect('/')->with('message', 'Tidak ada pertanyaan SPADA aktif untuk hari ini.');
+        }
+
+        $maxLength = $this->getSpadaAnswerMaxLength($question);
+
+        return view('spada-form', [
+            'question' => $question,
+            'maxLength' => $maxLength,
+        ]);
+    }
+
+    /**
+     * Store SpadaAnswer from form. question_id must be the active question for today; status_approve = 2.
+     */
+    public function storeSpadaAnswer(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'question_id' => 'required|integer|exists:spada_question,id',
+            'answer' => 'required|string|max:10000',
+        ]);
+
+        $today = now()->toDateString();
+        $question = SpadaQuestion::where('id', $request->question_id)
+            ->where('start_active', '<=', $today)
+            ->where('last_active', '>=', $today)
+            ->first();
+
+        if (! $question) {
+            return back()->withInput()->with('error', 'Pertanyaan tidak aktif atau tidak ditemukan.');
+        }
+
+        $maxLength = $this->getSpadaAnswerMaxLength($question);
+        $request->validate(['answer' => 'required|string|max:' . $maxLength]);
+
+        SpadaAnswer::create([
+            'question_id' => $question->id,
+            'answer' => $request->answer,
+            'status_approve' => 2,
+        ]);
+
+        return redirect()->route('spada.form')->with('success', 'Jawaban berhasil dikirim. Terima kasih!');
+    }
+
+    /**
+     * Max character length for answer input from SpadaQuestion:
+     * - If validate_rule contains a number, use that.
+     * - Else if type_question == 2, use 200.
+     * - Else default 1000.
+     */
+    private function getSpadaAnswerMaxLength(SpadaQuestion $question): int
+    {
+        $rule = $question->validate_rule;
+        if ($rule !== null && $rule !== '') {
+            $decoded = json_decode($rule);
+            if (is_object($decoded) || is_array($decoded)) {
+                foreach ((array) $decoded as $v) {
+                    if (is_numeric($v)) {
+                        return (int) $v;
+                    }
+                }
+            }
+            if (preg_match('/\d+/', $rule, $m)) {
+                return (int) $m[0];
+            }
+        }
+        if ($question->type_question == 2) {
+            return 200;
+        }
+        return 1000;
     }
 }
