@@ -148,10 +148,6 @@
             <p class="question-text">{{ $question->question }}</p>
         </div>
 
-        @if(!request()->secure())
-            <p class="alert alert-info" style="margin-bottom: 1rem;">Anda mengakses halaman melalui HTTP. Pesan peramban tentang "not secure" muncul karena koneksi tidak terenkripsi. Untuk pengiriman yang aman, gunakan HTTPS. Anda tetap dapat mengirim jawaban dengan menekan kirim.</p>
-        @endif
-
         <form action="https://mading.farifam.com/spada-form" method="POST">
             @csrf
             <input type="hidden" name="question_id" value="{{ $question->id }}">
