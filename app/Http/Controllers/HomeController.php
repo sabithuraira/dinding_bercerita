@@ -43,7 +43,8 @@ class HomeController extends Controller
             $kataMotivasi = KataMotivasi::where('is_active', 1)->inRandomOrder()->first();
         }
 
-        // Spada: active question today (same logic as /api/spada-question/active-today)
+        // Spada: show question active today (start_active <= today <= last_active);
+        // if none, show the last active question (most recent last_active before today)
         $spadaActiveToday = null;
         $spadaActiveTodayAnswers = collect();
         $spadaWordCloud = collect(); // type_question=2: unique answer => count for word cloud
@@ -52,6 +53,11 @@ class HomeController extends Controller
             $spadaActiveToday = SpadaQuestion::where('start_active', '<=', $today)
                 ->where('last_active', '>=', $today)
                 ->first();
+            if (! $spadaActiveToday) {
+                $spadaActiveToday = SpadaQuestion::where('last_active', '<', $today)
+                    ->orderBy('last_active', 'desc')
+                    ->first();
+            }
             if ($spadaActiveToday) {
                 $spadaActiveTodayAnswers = SpadaAnswer::where('question_id', $spadaActiveToday->id)
                     ->where('status_approve', 1)
