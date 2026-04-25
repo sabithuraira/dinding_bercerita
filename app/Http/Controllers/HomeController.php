@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\CurhatAnon;
 use App\Models\KataMotivasi;
+use App\Models\KutipanBuku;
 use App\Models\MusiUser;
+use App\Models\PromotingPicture;
 use App\Models\SpadaAnswer;
 use App\Models\SpadaQuestion;
 use Illuminate\Http\RedirectResponse;
@@ -43,6 +45,25 @@ class HomeController extends Controller
             $kataMotivasi = KataMotivasi::where('is_active', 1)->inRandomOrder()->first();
         }
 
+        // Kutipan Buku: same logic as /api/kutipan-buku/today
+        $kutipanBukuToday = null;
+        if (class_exists(KutipanBuku::class)) {
+            $today = now()->toDateString();
+            $kutipanBukuToday = KutipanBuku::whereDate('date_show', $today)
+                ->orderBy('id', 'desc')
+                ->first();
+        }
+
+        // Promoting Picture: find single data where start_date <= today <= end_date
+        $promotingPictureToday = null;
+        if (class_exists(PromotingPicture::class)) {
+            $today = now()->toDateString();
+            $promotingPictureToday = PromotingPicture::whereDate('start_date', '<=', $today)
+                ->whereDate('end_date', '>=', $today)
+                ->orderBy('id', 'desc')
+                ->first();
+        }
+
         // Spada: show question active today (start_active <= today <= last_active);
         // if none, show the last active question (most recent last_active before today)
         $spadaActiveToday = null;
@@ -77,6 +98,8 @@ class HomeController extends Controller
             'curhats' => $randomCurhats,
             'birthday' => $birthday,
             'kataMotivasi' => $kataMotivasi,
+            'kutipanBukuToday' => $kutipanBukuToday,
+            'promotingPictureToday' => $promotingPictureToday,
             'spadaActiveToday' => $spadaActiveToday,
             'spadaActiveTodayAnswers' => $spadaActiveTodayAnswers,
             'spadaWordCloud' => $spadaWordCloud,

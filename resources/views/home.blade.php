@@ -393,6 +393,77 @@
             color: #333333;
             font-style: italic;
         }
+
+        /* Kutipan Buku (similar to kata motivasi with book identity) */
+        .slide-book-quote {
+            background: #F0B940 !important;
+        }
+        .slide-book-quote .slide-overlay {
+            background: transparent;
+        }
+        .book-quote-content {
+            max-width: 85%;
+            width: 100%;
+            padding: 3rem 2rem;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+        }
+        .book-quote-icon {
+            font-size: clamp(2rem, 5vw, 3rem);
+            line-height: 1;
+            margin-bottom: 0.5rem;
+        }
+        .book-quote-title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.04em;
+        }
+        .book-quote-text {
+            font-family: Georgia, 'Times New Roman', serif;
+            font-size: clamp(1.2rem, 3.2vw, 2.1rem);
+            line-height: 1.6;
+            color: #333333;
+            margin: 1rem 0 1.75rem;
+            font-style: italic;
+        }
+        .book-quote-owner {
+            font-size: clamp(0.95rem, 2vw, 1.35rem);
+            font-weight: 600;
+            color: #333333;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            opacity: 0.9;
+        }
+        .book-quote-owner::before {
+            content: '— ';
+        }
+
+        /* Promoting picture: full screen image (fit width or height first) */
+        .slide-promoting-picture {
+            background: #000000 !important;
+        }
+        .slide-promoting-picture .slide-overlay {
+            background: transparent;
+        }
+        .promoting-picture-container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+            padding: 0;
+        }
+        .promoting-picture-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+        }
         
         /* Slide 4 - Spada: white bg, text yellow/black/gray only */
         .slide-spada {
@@ -872,6 +943,35 @@
                 @endif
             </div>
         </div>
+
+        @if(isset($kutipanBukuToday) && $kutipanBukuToday)
+        <!-- Slide - Kutipan Buku Hari Ini -->
+        <div class="slide slide-book-quote">
+            <div class="slide-overlay"></div>
+            <div class="book-quote-content">
+                <div class="book-quote-icon">&#128214;</div>
+                <h2 class="book-quote-title">Kutipan Buku Hari Ini</h2>
+                <p class="book-quote-text">"{{ $kutipanBukuToday->quote }}"</p>
+                @if(!empty($kutipanBukuToday->dikutip_dari))
+                    <p class="book-quote-owner">{{ $kutipanBukuToday->dikutip_dari }}</p>
+                @endif
+            </div>
+        </div>
+        @endif
+
+        @if(isset($promotingPictureToday) && $promotingPictureToday && !empty($promotingPictureToday->picture_path))
+        <!-- Slide - Promoting Picture -->
+        <div class="slide slide-promoting-picture">
+            <div class="slide-overlay"></div>
+            <div class="promoting-picture-container">
+                @php
+                    $picPath = $promotingPictureToday->picture_path;
+                    $picUrl = preg_match('/^https?:\\/\\//i', $picPath) ? $picPath : asset('storage/' . $picPath);
+                @endphp
+                <img src="{{ $picUrl }}" alt="{{ $promotingPictureToday->title ?? 'Promoting Picture' }}">
+            </div>
+        </div>
+        @endif
         
         @if(isset($spadaActiveToday) && $spadaActiveToday)
         <!-- Slide 4 - Spada (active question today + answers: sticky notes or word cloud) -->
@@ -942,15 +1042,28 @@
         
         <!-- Dots Navigation (dot count matches visible slides) -->
         <div class="dots-container">
-            <span class="dot active" onclick="currentSlide(1)"></span>
+            @php $dotIdx = 1; @endphp
+            <span class="dot active" onclick="currentSlide({{ $dotIdx }})"></span>
+            @php $dotIdx++; @endphp
             @if(isset($birthday) && $birthday->isNotEmpty())
-            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide({{ $dotIdx }})"></span>
+            @php $dotIdx++; @endphp
             @endif
-            <span class="dot" onclick="currentSlide(3)"></span>
+            <span class="dot" onclick="currentSlide({{ $dotIdx }})"></span>
+            @php $dotIdx++; @endphp
+            @if(isset($kutipanBukuToday) && $kutipanBukuToday)
+            <span class="dot" onclick="currentSlide({{ $dotIdx }})"></span>
+            @php $dotIdx++; @endphp
+            @endif
+            @if(isset($promotingPictureToday) && $promotingPictureToday && !empty($promotingPictureToday->picture_path))
+            <span class="dot" onclick="currentSlide({{ $dotIdx }})"></span>
+            @php $dotIdx++; @endphp
+            @endif
             @if(isset($spadaActiveToday) && $spadaActiveToday)
-            <span class="dot" onclick="currentSlide(4)"></span>
+            <span class="dot" onclick="currentSlide({{ $dotIdx }})"></span>
+            @php $dotIdx++; @endphp
             @endif
-            <span class="dot" onclick="currentSlide(5)"></span>
+            <span class="dot" onclick="currentSlide({{ $dotIdx }})"></span>
         </div>
     </div>
     
@@ -992,9 +1105,24 @@
         function resetInterval() {
             clearInterval(slideInterval);
             const currentSlideEl = slides[currentSlideIndex];
-            const isSlide1 = currentSlideEl && currentSlideEl.querySelector('.curhats-container');
-            const isSlide4 = currentSlideEl && currentSlideEl.classList.contains('slide-spada');
-            const delayMs = (isSlide1 || isSlide4) ? 60 * 1000 : 5000; // 1 min for slide 1 & 4, 5 sec for others
+            const isSlide1 = currentSlideEl && currentSlideEl.classList.contains('slide-1');
+            const isBirthdaySlide = currentSlideEl && currentSlideEl.classList.contains('slide-birthday');
+            const isKataMotivasiSlide = currentSlideEl && currentSlideEl.classList.contains('slide-quote');
+            const isKutipanBukuSlide = currentSlideEl && currentSlideEl.classList.contains('slide-book-quote');
+            const isSpadaSlide = currentSlideEl && currentSlideEl.classList.contains('slide-spada');
+
+            let delayMs = 5000; // fallback
+            if (isSlide1) {
+                delayMs = 30 * 1000; // Slide 1 = 30s
+            } else if (isBirthdaySlide) {
+                delayMs = 7 * 1000; // Selamat Ulang Tahun = 7s
+            } else if (isKataMotivasiSlide) {
+                delayMs = 10 * 1000; // Kata Motivasi = 10s
+            } else if (isKutipanBukuSlide) {
+                delayMs = 10 * 1000; // Kutipan Buku = 10s
+            } else if (isSpadaSlide) {
+                delayMs = 15 * 1000; // SPADA = 15s
+            }
             slideInterval = setInterval(() => {
                 changeSlide(1);
             }, delayMs);
