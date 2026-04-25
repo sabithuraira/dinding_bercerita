@@ -7,6 +7,8 @@ use App\Http\Controllers\SpadaQuestionController;
 use App\Http\Controllers\SpadaAnswerController;
 use App\Http\Controllers\MusiUserController;
 use App\Http\Controllers\KataMotivasiController;
+use App\Http\Controllers\KutipanBukuController;
+use App\Http\Controllers\PromotingPictureController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,3 +70,16 @@ Route::prefix('kata-motivasi')->group(function () {
     Route::post('/destroy', [KataMotivasiController::class, 'destroy']);
 });
 Route::apiResource('kata-motivasi', KataMotivasiController::class);
+
+// KutipanBuku API Routes
+Route::prefix('kutipan-buku')->group(function () {
+    Route::get('/today', [KutipanBukuController::class, 'getToday']);
+    Route::post('/destroy', [KutipanBukuController::class, 'destroy']);
+});
+Route::apiResource('kutipan-buku', KutipanBukuController::class);
+
+// PromotingPicture API Routes
+Route::prefix('promoting-picture')->group(function () {
+    Route::post('/destroy', [PromotingPictureController::class, 'destroy']);
+});
+Route::apiResource('promoting-picture', PromotingPictureController::class);
