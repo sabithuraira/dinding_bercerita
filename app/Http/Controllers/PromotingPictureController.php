@@ -57,7 +57,28 @@ class PromotingPictureController extends Controller
             'end_date' => 'End Date',
         ]);
 
-        $picturePath = $request->file('picture')->store('promoting-picture', 'public');
+        $pictureFile = $request->file('picture');
+        if (! $pictureFile || ! $pictureFile->isValid()) {
+            return response()->json([
+                'success' => '0',
+                'message' => 'File gambar tidak valid atau gagal diupload',
+            ], 422);
+        }
+
+        $picturePath = $pictureFile->store('promoting-picture', 'public');
+        if ($picturePath === false) {
+            \Log::error('PromotingPicture upload failed on store()', [
+                'disk' => 'public',
+                'filename' => $pictureFile->getClientOriginalName(),
+                'mime' => $pictureFile->getClientMimeType(),
+                'size' => $pictureFile->getSize(),
+            ]);
+
+            return response()->json([
+                'success' => '0',
+                'message' => 'Gagal menyimpan file gambar ke storage',
+            ], 500);
+        }
 
         $model = PromotingPicture::create([
             'title' => $validated['title'],
@@ -120,8 +141,8 @@ class PromotingPictureController extends Controller
             'end_date' => 'End Date',
         ]);
 
-        $nextStartDate = $validated['start_date'] ?? $model->start_date?->format('Y-m-d');
-        $nextEndDate = $validated['end_date'] ?? $model->end_date?->format('Y-m-d');
+        $nextStartDate = $validated['start_date'] ?? ($model->start_date ? $model->start_date->format('Y-m-d') : null);
+        $nextEndDate = $validated['end_date'] ?? ($model->end_date ? $model->end_date->format('Y-m-d') : null);
         if ($nextStartDate && $nextEndDate && $nextEndDate < $nextStartDate) {
             return response()->json([
                 'success' => '0',
@@ -139,10 +160,35 @@ class PromotingPictureController extends Controller
             $model->end_date = $request->get('end_date');
         }
         if ($request->hasFile('picture')) {
+            $pictureFile = $request->file('picture');
+            if (! $pictureFile || ! $pictureFile->isValid()) {
+                return response()->json([
+                    'success' => '0',
+                    'message' => 'File gambar tidak valid atau gagal diupload',
+                ], 422);
+            }
+
             if (! empty($model->picture_path) && Storage::disk('public')->exists($model->picture_path)) {
                 Storage::disk('public')->delete($model->picture_path);
             }
-            $model->picture_path = $request->file('picture')->store('promoting-picture', 'public');
+
+            $picturePath = $pictureFile->store('promoting-picture', 'public');
+            if ($picturePath === false) {
+                \Log::error('PromotingPicture upload failed on update()', [
+                    'id' => $model->id,
+                    'disk' => 'public',
+                    'filename' => $pictureFile->getClientOriginalName(),
+                    'mime' => $pictureFile->getClientMimeType(),
+                    'size' => $pictureFile->getSize(),
+                ]);
+
+                return response()->json([
+                    'success' => '0',
+                    'message' => 'Gagal menyimpan file gambar ke storage',
+                ], 500);
+            }
+
+            $model->picture_path = $picturePath;
         }
 
         if ($model->save()) {
