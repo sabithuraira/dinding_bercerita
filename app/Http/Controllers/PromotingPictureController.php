@@ -6,9 +6,51 @@ use App\Http\Resources\PromotingPictureResource;
 use App\Models\PromotingPicture;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Throwable;
 
 class PromotingPictureController extends Controller
 {
+    /**
+     * Ensure upload directory exists and store picture safely.
+     *
+     * @param  \Illuminate\Http\UploadedFile  $pictureFile
+     * @return string|false
+     */
+    private function storePicture($pictureFile)
+    {
+        $disk = Storage::disk('public');
+        $targetDir = 'promoting-picture';
+
+        try {
+            if (! $disk->exists($targetDir)) {
+                $disk->makeDirectory($targetDir);
+            }
+
+            $absolutePath = $disk->path($targetDir);
+            if (! is_dir($absolutePath)) {
+                @mkdir($absolutePath, 0775, true);
+            }
+
+            if (! is_writable($absolutePath)) {
+                \Log::error('PromotingPicture upload directory is not writable', [
+                    'disk' => 'public',
+                    'path' => $absolutePath,
+                ]);
+
+                return false;
+            }
+
+            return $pictureFile->store($targetDir, 'public');
+        } catch (Throwable $e) {
+            \Log::error('PromotingPicture upload exception', [
+                'disk' => 'public',
+                'message' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -65,7 +107,7 @@ class PromotingPictureController extends Controller
             ], 422);
         }
 
-        $picturePath = $pictureFile->store('promoting-picture', 'public');
+        $picturePath = $this->storePicture($pictureFile);
         if ($picturePath === false) {
             \Log::error('PromotingPicture upload failed on store()', [
                 'disk' => 'public',
@@ -172,7 +214,7 @@ class PromotingPictureController extends Controller
                 Storage::disk('public')->delete($model->picture_path);
             }
 
-            $picturePath = $pictureFile->store('promoting-picture', 'public');
+            $picturePath = $this->storePicture($pictureFile);
             if ($picturePath === false) {
                 \Log::error('PromotingPicture upload failed on update()', [
                     'id' => $model->id,
