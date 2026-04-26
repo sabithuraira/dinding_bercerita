@@ -11,6 +11,23 @@ use Throwable;
 class PromotingPictureController extends Controller
 {
     /**
+     * Transform model to API payload and include full image URL.
+     *
+     * @param  \App\Models\PromotingPicture  $model
+     * @param  \Illuminate\Http\Request  $request
+     * @return array<string, mixed>
+     */
+    private function transformPromotingPicture(PromotingPicture $model, Request $request): array
+    {
+        $data = (new PromotingPictureResource($model))->toArray($request);
+        $data['fullPicturePath'] = ! empty($data['picture_path'])
+            ? Storage::disk('public')->url($data['picture_path'])
+            : null;
+
+        return $data;
+    }
+
+    /**
      * Ensure upload directory exists and store picture safely.
      *
      * @param  \Illuminate\Http\UploadedFile  $pictureFile
@@ -67,7 +84,9 @@ class PromotingPictureController extends Controller
 
         return response()->json([
             'success' => '1',
-            'datas' => PromotingPictureResource::collection($datas->items()),
+            'datas' => $datas->getCollection()
+                ->map(fn (PromotingPicture $model) => $this->transformPromotingPicture($model, $request))
+                ->values(),
             'pagination' => [
                 'current_page' => $datas->currentPage(),
                 'last_page' => $datas->lastPage(),
@@ -132,7 +151,7 @@ class PromotingPictureController extends Controller
         return response()->json([
             'success' => '1',
             'message' => 'Data berhasil disimpan',
-            'data' => new PromotingPictureResource($model),
+            'data' => $this->transformPromotingPicture($model, $request),
         ]);
     }
 
@@ -152,7 +171,7 @@ class PromotingPictureController extends Controller
 
         return response()->json([
             'success' => '1',
-            'data' => new PromotingPictureResource($model),
+            'data' => $this->transformPromotingPicture($model, $request),
         ]);
     }
 
@@ -234,10 +253,12 @@ class PromotingPictureController extends Controller
         }
 
         if ($model->save()) {
+            $freshModel = $model->fresh();
+
             return response()->json([
                 'success' => '1',
                 'message' => 'Data berhasil diupdate',
-                'data' => new PromotingPictureResource($model->fresh()),
+                'data' => $this->transformPromotingPicture($freshModel, $request),
             ]);
         }
 
