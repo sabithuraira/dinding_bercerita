@@ -104,6 +104,7 @@ class HomeController extends Controller
             'spadaActiveToday' => $spadaActiveToday,
             'spadaActiveTodayAnswers' => $spadaActiveTodayAnswers,
             'spadaWordCloud' => $spadaWordCloud,
+            'recaptchaSiteKey' => config('services.recaptcha.site_key'),
         ]);
     }
 

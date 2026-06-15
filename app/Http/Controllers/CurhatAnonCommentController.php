@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CurhatAnon;
 use App\Models\CurhatAnonComment;
+use App\Rules\Recaptcha;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -58,8 +59,10 @@ class CurhatAnonCommentController extends Controller
 
         $validated = $request->validate([
             'comment' => 'required|string|max:1000',
+            'g-recaptcha-response' => ['required', new Recaptcha()],
         ], [], [
             'comment' => 'Komentar',
+            'g-recaptcha-response' => 'reCAPTCHA',
         ]);
 
         CurhatAnonComment::create([

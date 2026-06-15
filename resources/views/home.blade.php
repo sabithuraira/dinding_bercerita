@@ -9,6 +9,9 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
+    @if (!empty($recaptchaSiteKey))
+        <script src="https://www.google.com/recaptcha/api.js?render=explicit" async defer></script>
+    @endif
     <style>
         * {
             margin: 0;
@@ -833,6 +836,17 @@
             gap: 0.5rem;
         }
 
+        .curhat-recaptcha-wrap {
+            margin-top: 0.75rem;
+            min-height: 78px;
+        }
+
+        .curhat-recaptcha-missing {
+            margin-top: 0.75rem;
+            font-size: 0.85rem;
+            color: #c62828;
+        }
+
         .curhat-comment-form button[type="submit"] {
             border: none;
             border-radius: 0.4rem;
@@ -1254,6 +1268,11 @@
                 <form class="curhat-comment-form" id="curhatCommentForm">
                     <input type="hidden" name="curhat_anon_id" id="curhatCommentFormId" value="">
                     <textarea name="comment" id="curhatCommentInput" maxlength="1000" placeholder="Tulis komentar Anda (anonim)..." required></textarea>
+                    @if (!empty($recaptchaSiteKey))
+                        <div class="curhat-recaptcha-wrap" id="curhatRecaptcha"></div>
+                    @else
+                        <p class="curhat-recaptcha-missing">reCAPTCHA belum dikonfigurasi. Hubungi administrator.</p>
+                    @endif
                     <div class="form-actions">
                         <button type="submit">Kirim Komentar</button>
                     </div>
@@ -1393,7 +1412,35 @@
         const commentInput = document.getElementById('curhatCommentInput');
         const commentFormMessage = document.getElementById('curhatCommentFormMessage');
         const commentListBody = document.getElementById('curhatCommentListBody');
+        const recaptchaSiteKey = @json($recaptchaSiteKey ?? '');
         let activeCurhatId = null;
+        let recaptchaWidgetId = null;
+
+        function resetRecaptcha() {
+            if (recaptchaWidgetId !== null && typeof grecaptcha !== 'undefined') {
+                grecaptcha.reset(recaptchaWidgetId);
+            }
+        }
+
+        function renderRecaptchaIfNeeded() {
+            if (!recaptchaSiteKey || typeof grecaptcha === 'undefined') {
+                return;
+            }
+
+            const container = document.getElementById('curhatRecaptcha');
+            if (!container) {
+                return;
+            }
+
+            if (recaptchaWidgetId === null) {
+                recaptchaWidgetId = grecaptcha.render(container, {
+                    sitekey: recaptchaSiteKey,
+                });
+                return;
+            }
+
+            resetRecaptcha();
+        }
 
         function updateCommentCount(curhatId, count) {
             const label = document.querySelector(`[data-comment-count="${curhatId}"]`);
@@ -1420,6 +1467,7 @@
             commentFormMessage.hidden = true;
             commentFormMessage.textContent = '';
             commentFormMessage.className = 'curhat-modal-message';
+            resetRecaptcha();
         }
 
         document.querySelectorAll('[data-close-modal]').forEach((btn) => {
@@ -1445,6 +1493,7 @@
                 commentFormMessage.hidden = true;
                 openModal(commentFormModal);
                 commentInput.focus();
+                setTimeout(renderRecaptchaIfNeeded, 100);
             });
         });
 
@@ -1500,6 +1549,24 @@
                 return;
             }
 
+            let recaptchaResponse = '';
+            if (recaptchaSiteKey) {
+                if (typeof grecaptcha === 'undefined' || recaptchaWidgetId === null) {
+                    commentFormMessage.hidden = false;
+                    commentFormMessage.className = 'curhat-modal-message error';
+                    commentFormMessage.textContent = 'reCAPTCHA belum siap. Silakan tunggu sebentar lalu coba lagi.';
+                    return;
+                }
+
+                recaptchaResponse = grecaptcha.getResponse(recaptchaWidgetId);
+                if (!recaptchaResponse) {
+                    commentFormMessage.hidden = false;
+                    commentFormMessage.className = 'curhat-modal-message error';
+                    commentFormMessage.textContent = 'Silakan selesaikan verifikasi reCAPTCHA.';
+                    return;
+                }
+            }
+
             commentFormMessage.hidden = false;
             commentFormMessage.className = 'curhat-modal-message';
             commentFormMessage.textContent = 'Mengirim komentar...';
@@ -1512,23 +1579,35 @@
                         'Content-Type': 'application/json',
                         'X-CSRF-TOKEN': csrfToken,
                     },
-                    body: JSON.stringify({ comment }),
+                    body: JSON.stringify({
+                        comment,
+                        'g-recaptcha-response': recaptchaResponse,
+                    }),
                 });
                 const result = await response.json();
 
                 if (!response.ok || result.success !== '1') {
                     commentFormMessage.className = 'curhat-modal-message error';
-                    commentFormMessage.textContent = result.message || 'Gagal mengirim komentar.';
+                    const errorMessage = result.message
+                        || (result.errors && Object.values(result.errors).flat().join(' '))
+                        || 'Gagal mengirim komentar.';
+                    commentFormMessage.textContent = errorMessage;
+                    resetRecaptcha();
                     return;
                 }
 
                 commentFormMessage.className = 'curhat-modal-message success';
                 commentFormMessage.textContent = result.message || 'Komentar berhasil dikirim.';
                 commentInput.value = '';
+                resetRecaptcha();
                 updateCommentCount(curhatId, result.comments_count);
+                closeModal(commentFormModal);
+                commentFormMessage.hidden = true;
+                commentFormMessage.textContent = '';
             } catch (error) {
                 commentFormMessage.className = 'curhat-modal-message error';
                 commentFormMessage.textContent = 'Gagal mengirim komentar.';
+                resetRecaptcha();
             }
         });
     </script>
