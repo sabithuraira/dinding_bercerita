@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>DINDING BERCERITA</title>
     
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -718,6 +719,176 @@
             text-align: justify;
             flex: 0 1 auto;
         }
+
+        .speech-bubble .bubble-footer {
+            margin-top: 0.75rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(51, 51, 51, 0.15);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.4rem;
+            position: relative;
+            z-index: 3;
+        }
+
+        .speech-bubble .comment-count {
+            font-size: clamp(0.45rem, 1vw, 0.8rem);
+            font-weight: 700;
+            color: #333333;
+            margin-right: auto;
+        }
+
+        .speech-bubble .comment-btn {
+            border: none;
+            border-radius: 0.35rem;
+            padding: 0.25rem 0.5rem;
+            font-size: clamp(0.4rem, 0.95vw, 0.75rem);
+            font-weight: 700;
+            cursor: pointer;
+            background: #333333;
+            color: #FFFFFF;
+            transition: opacity 0.2s;
+        }
+
+        .speech-bubble .comment-btn:hover {
+            opacity: 0.85;
+        }
+
+        .speech-bubble .comment-btn-secondary {
+            background: #FFFFFF;
+            color: #333333;
+            border: 1px solid #333333;
+        }
+
+        .curhat-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            z-index: 200;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .curhat-modal-overlay.active {
+            display: flex;
+        }
+
+        .curhat-modal {
+            background: #FFFFFF;
+            border-radius: 0.75rem;
+            width: min(520px, 96vw);
+            max-height: 80vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0.5rem 2rem rgba(0, 0, 0, 0.25);
+        }
+
+        .curhat-modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.9rem 1rem;
+            background: #FF9800;
+            color: #FFFFFF;
+        }
+
+        .curhat-modal-header h3 {
+            font-size: 1rem;
+            font-weight: 700;
+        }
+
+        .curhat-modal-close {
+            border: none;
+            background: transparent;
+            color: #FFFFFF;
+            font-size: 1.4rem;
+            line-height: 1;
+            cursor: pointer;
+        }
+
+        .curhat-modal-body {
+            padding: 1rem;
+            overflow-y: auto;
+        }
+
+        .curhat-comment-form textarea {
+            width: 100%;
+            min-height: 120px;
+            border: 1px solid #C4C4C4;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+        }
+
+        .curhat-comment-form .form-actions {
+            margin-top: 0.75rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .curhat-comment-form button[type="submit"] {
+            border: none;
+            border-radius: 0.4rem;
+            padding: 0.5rem 1rem;
+            background: #333333;
+            color: #FFFFFF;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .curhat-comment-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .curhat-comment-item {
+            background: #F5F5F5;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+        }
+
+        .curhat-comment-item p {
+            font-size: 0.95rem;
+            color: #333333;
+            line-height: 1.5;
+            white-space: pre-wrap;
+        }
+
+        .curhat-comment-item time {
+            display: block;
+            margin-top: 0.35rem;
+            font-size: 0.75rem;
+            color: #666666;
+        }
+
+        .curhat-modal-message {
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .curhat-modal-message.success {
+            color: #2e7d32;
+        }
+
+        .curhat-modal-message.error {
+            color: #c62828;
+        }
+
+        .curhat-comment-empty {
+            color: #666666;
+            font-size: 0.95rem;
+            text-align: center;
+            padding: 1rem 0;
+        }
         
         /* Speech bubbles: white, yellow, gray only */
         .speech-bubble.color-1 {
@@ -887,10 +1058,15 @@
                         $colors = ['color-1', 'color-2', 'color-3', 'color-4', 'color-5', 'color-6', 'color-7', 'color-8', 'color-9'];
                     @endphp
                     @foreach($curhats as $index => $curhat)
-                        <div class="speech-bubble {{ $colors[$index % count($colors)] }} {{ strlen($curhat->content) > 250 ? 'bubble-tall' : '' }}">
+                        <div class="speech-bubble {{ $colors[$index % count($colors)] }} {{ strlen($curhat->content) > 250 ? 'bubble-tall' : '' }}" data-curhat-id="{{ $curhat->id }}">
                             <span class="quote-start">"</span>
                             <span class="quote-end">"</span>
                             <div class="bubble-content">{{ $curhat->content }}</div>
+                            <div class="bubble-footer">
+                                <span class="comment-count" data-comment-count="{{ $curhat->id }}">{{ $curhat->comments_count }} komentar</span>
+                                <button type="button" class="comment-btn" data-action="comment-form" data-curhat-id="{{ $curhat->id }}">Komentar</button>
+                                <button type="button" class="comment-btn comment-btn-secondary" data-action="comment-list" data-curhat-id="{{ $curhat->id }}">Lihat Komentar</button>
+                            </div>
                         </div>
                     @endforeach
                 @else
@@ -1066,6 +1242,37 @@
             <span class="dot" onclick="currentSlide({{ $dotIdx }})"></span>
         </div>
     </div>
+
+    <div class="curhat-modal-overlay" id="curhatCommentFormModal" aria-hidden="true">
+        <div class="curhat-modal" role="dialog" aria-labelledby="curhatCommentFormTitle">
+            <div class="curhat-modal-header">
+                <h3 id="curhatCommentFormTitle">Tulis Komentar</h3>
+                <button type="button" class="curhat-modal-close" data-close-modal>&times;</button>
+            </div>
+            <div class="curhat-modal-body">
+                <p class="curhat-modal-message" id="curhatCommentFormMessage" hidden></p>
+                <form class="curhat-comment-form" id="curhatCommentForm">
+                    <input type="hidden" name="curhat_anon_id" id="curhatCommentFormId" value="">
+                    <textarea name="comment" id="curhatCommentInput" maxlength="1000" placeholder="Tulis komentar Anda (anonim)..." required></textarea>
+                    <div class="form-actions">
+                        <button type="submit">Kirim Komentar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="curhat-modal-overlay" id="curhatCommentListModal" aria-hidden="true">
+        <div class="curhat-modal" role="dialog" aria-labelledby="curhatCommentListTitle">
+            <div class="curhat-modal-header">
+                <h3 id="curhatCommentListTitle">Daftar Komentar</h3>
+                <button type="button" class="curhat-modal-close" data-close-modal>&times;</button>
+            </div>
+            <div class="curhat-modal-body" id="curhatCommentListBody">
+                <p class="curhat-comment-empty">Memuat komentar...</p>
+            </div>
+        </div>
+    </div>
     
     <script>
         let currentSlideIndex = 0;
@@ -1177,6 +1384,153 @@
         setTimeout(() => {
             location.reload();
         }, REFRESH_INTERVAL_MS);
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        const commentFormModal = document.getElementById('curhatCommentFormModal');
+        const commentListModal = document.getElementById('curhatCommentListModal');
+        const commentForm = document.getElementById('curhatCommentForm');
+        const commentFormIdInput = document.getElementById('curhatCommentFormId');
+        const commentInput = document.getElementById('curhatCommentInput');
+        const commentFormMessage = document.getElementById('curhatCommentFormMessage');
+        const commentListBody = document.getElementById('curhatCommentListBody');
+        let activeCurhatId = null;
+
+        function updateCommentCount(curhatId, count) {
+            const label = document.querySelector(`[data-comment-count="${curhatId}"]`);
+            if (label) {
+                label.textContent = `${count} komentar`;
+            }
+        }
+
+        function openModal(modal) {
+            modal.classList.add('active');
+            modal.setAttribute('aria-hidden', 'false');
+            clearInterval(slideInterval);
+        }
+
+        function closeModal(modal) {
+            modal.classList.remove('active');
+            modal.setAttribute('aria-hidden', 'true');
+            resetInterval();
+        }
+
+        function closeAllCommentModals() {
+            closeModal(commentFormModal);
+            closeModal(commentListModal);
+            commentFormMessage.hidden = true;
+            commentFormMessage.textContent = '';
+            commentFormMessage.className = 'curhat-modal-message';
+        }
+
+        document.querySelectorAll('[data-close-modal]').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                closeAllCommentModals();
+            });
+        });
+
+        [commentFormModal, commentListModal].forEach((modal) => {
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    closeAllCommentModals();
+                }
+            });
+        });
+
+        document.querySelectorAll('[data-action="comment-form"]').forEach((btn) => {
+            btn.addEventListener('click', (event) => {
+                event.stopPropagation();
+                activeCurhatId = btn.getAttribute('data-curhat-id');
+                commentFormIdInput.value = activeCurhatId;
+                commentInput.value = '';
+                commentFormMessage.hidden = true;
+                openModal(commentFormModal);
+                commentInput.focus();
+            });
+        });
+
+        document.querySelectorAll('[data-action="comment-list"]').forEach((btn) => {
+            btn.addEventListener('click', async (event) => {
+                event.stopPropagation();
+                activeCurhatId = btn.getAttribute('data-curhat-id');
+                commentListBody.innerHTML = '<p class="curhat-comment-empty">Memuat komentar...</p>';
+                openModal(commentListModal);
+
+                try {
+                    const response = await fetch(`/curhat-anon/${activeCurhatId}/comments`, {
+                        headers: { 'Accept': 'application/json' },
+                    });
+                    const result = await response.json();
+
+                    if (!response.ok || result.success !== '1') {
+                        commentListBody.innerHTML = `<p class="curhat-comment-empty">${result.message || 'Gagal memuat komentar.'}</p>`;
+                        return;
+                    }
+
+                    updateCommentCount(activeCurhatId, result.comments_count);
+
+                    if (!result.comments || result.comments.length === 0) {
+                        commentListBody.innerHTML = '<p class="curhat-comment-empty">Belum ada komentar.</p>';
+                        return;
+                    }
+
+                    const list = document.createElement('ul');
+                    list.className = 'curhat-comment-list';
+                    result.comments.forEach((item) => {
+                        const li = document.createElement('li');
+                        li.className = 'curhat-comment-item';
+                        li.innerHTML = `<p></p><time></time>`;
+                        li.querySelector('p').textContent = item.comment;
+                        li.querySelector('time').textContent = item.created_at || '';
+                        list.appendChild(li);
+                    });
+                    commentListBody.innerHTML = '';
+                    commentListBody.appendChild(list);
+                } catch (error) {
+                    commentListBody.innerHTML = '<p class="curhat-comment-empty">Gagal memuat komentar.</p>';
+                }
+            });
+        });
+
+        commentForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const curhatId = commentFormIdInput.value;
+            const comment = commentInput.value.trim();
+
+            if (!curhatId || !comment) {
+                return;
+            }
+
+            commentFormMessage.hidden = false;
+            commentFormMessage.className = 'curhat-modal-message';
+            commentFormMessage.textContent = 'Mengirim komentar...';
+
+            try {
+                const response = await fetch(`/curhat-anon/${curhatId}/comments`, {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken,
+                    },
+                    body: JSON.stringify({ comment }),
+                });
+                const result = await response.json();
+
+                if (!response.ok || result.success !== '1') {
+                    commentFormMessage.className = 'curhat-modal-message error';
+                    commentFormMessage.textContent = result.message || 'Gagal mengirim komentar.';
+                    return;
+                }
+
+                commentFormMessage.className = 'curhat-modal-message success';
+                commentFormMessage.textContent = result.message || 'Komentar berhasil dikirim.';
+                commentInput.value = '';
+                updateCommentCount(curhatId, result.comments_count);
+            } catch (error) {
+                commentFormMessage.className = 'curhat-modal-message error';
+                commentFormMessage.textContent = 'Gagal mengirim komentar.';
+            }
+        });
     </script>
 </body>
 </html>

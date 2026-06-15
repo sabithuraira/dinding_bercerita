@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CurhatAnon extends Model
 {
@@ -13,8 +14,13 @@ class CurhatAnon extends Model
 
     protected $fillable = [
         'content',
-        'status_verifikasi'
+        'status_verifikasi',
     ];
+
+    public function comments(): HasMany
+    {
+        return $this->hasMany(CurhatAnonComment::class, 'curhat_anon_id');
+    }
 
     public function getListStatusVerifikasiAttribute()
     {

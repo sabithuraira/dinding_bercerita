@@ -23,6 +23,7 @@ class HomeController extends Controller
     {
         // Get last 24 approved curhats, then pick up to 12 random
         $approvedCurhats = CurhatAnon::where('status_verifikasi', 2)
+            ->withCount('comments')
             ->orderBy('created_at', 'desc')
             ->limit(24)
             ->get();
